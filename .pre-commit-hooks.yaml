@@ -1,0 +1,5 @@
+- id: sentinel
+  name: sentinel secret scan
+  entry: sentinel
+  language: python
+  types: [text]

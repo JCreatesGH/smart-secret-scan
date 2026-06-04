@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentinel-scan"
+version = "0.1.0"
+description = "A self-learning secret scanner for pre-commit that remembers your confirmed false positives."
+readme = "README.md"
+authors = [{ name = "Joshua John", email = "josh202@gmail.com" }]
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["security", "secrets", "pre-commit", "entropy", "git", "scanner"]
+
+[project.scripts]
+sentinel = "sentinel.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
