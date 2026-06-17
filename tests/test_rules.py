@@ -29,6 +29,17 @@ def test_private_key_and_jwt():
     assert "jwt" in rules(scan_text(f"auth = '{jwt}'"))
 
 
+def test_detects_more_known_tokens():
+    text = (
+        "gl = 'glpat-" + "a" * 20 + "'\n"
+        "npm = 'npm_" + "b" * 36 + "'\n"
+        "oai = 'sk-proj-" + "c" * 30 + "'\n"
+        "hook = 'https://hooks.slack.com/services/T00/B11/abcDEF'\n"
+    )
+    r = rules(scan_text(text))
+    assert {"gitlab-pat", "npm-token", "openai-key", "slack-webhook"} <= r
+
+
 def test_clean_code_has_no_findings():
     text = "def add(a, b):\n    return a + b  # just normal code\n"
     assert scan_text(text) == []

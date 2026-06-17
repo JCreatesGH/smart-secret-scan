@@ -31,9 +31,10 @@ repos:
 sentinel app.py config.py        # exits 1 if it finds anything new
 ```
 
-- **Known formats** — GitHub PATs, AWS access keys, Slack/Stripe/Google keys, JWTs, PEM private keys, and `password = "…"`-style assignments.
+- **Known formats** — GitHub (classic + fine-grained) & GitLab PATs, AWS access keys, Slack tokens & webhooks, Stripe/OpenAI/Google/SendGrid/npm keys, JWTs, PEM private keys, and `password = "…"`-style assignments.
 - **Entropy fallback** — long, high-entropy, mixed-charset tokens are flagged even if they don't match a known pattern.
-- **Redaction** — secrets are never printed in full.
+- **Redaction** — secrets are never printed in full (including in `--json` output).
+- **JSON output** — `sentinel --json <files>` emits redacted findings for tooling/CI.
 
 ## The "self-learning" part
 
@@ -55,7 +56,7 @@ findings = scan_text(open("app.py").read())
 ## Development
 
 ```bash
-python -m pytest -q   # 10 tests
+pip install -e .[dev] && python -m pytest -q   # 15 tests
 ```
 
 ## License

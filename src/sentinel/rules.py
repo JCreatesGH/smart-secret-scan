@@ -9,10 +9,15 @@ from .entropy import looks_random
 PATTERNS = {
     "github-pat": re.compile(r"\bghp_[A-Za-z0-9]{36}\b"),
     "github-fine": re.compile(r"\bgithub_pat_[A-Za-z0-9_]{60,}\b"),
+    "gitlab-pat": re.compile(r"\bglpat-[A-Za-z0-9_\-]{20}\b"),
     "aws-access-key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     "slack-token": re.compile(r"\bxox[baprs]-[0-9A-Za-z-]{10,}\b"),
+    "slack-webhook": re.compile(r"https://hooks\.slack\.com/services/[A-Za-z0-9/]+"),
     "google-api-key": re.compile(r"\bAIza[0-9A-Za-z_\-]{35}\b"),
     "stripe-secret": re.compile(r"\bsk_(?:live|test)_[0-9A-Za-z]{16,}\b"),
+    "openai-key": re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_\-]{20,}\b"),
+    "sendgrid-key": re.compile(r"\bSG\.[A-Za-z0-9_\-]{22}\.[A-Za-z0-9_\-]{43}\b"),
+    "npm-token": re.compile(r"\bnpm_[A-Za-z0-9]{36}\b"),
     "private-key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "jwt": re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b"),
 }
