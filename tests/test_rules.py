@@ -49,3 +49,29 @@ def test_findings_carry_line_and_redaction():
     f = scan_text("\nkey = 'ghp_" + "b" * 36 + "'")[0]
     assert f.line == 2
     assert "…" in f.redacted() and f.secret not in f.redacted()
+
+
+def test_detects_github_oauth_and_stripe_restricted():
+    text = ("gho = 'gho_" + "a" * 36 + "'\n"
+            "rk = 'rk_live_" + "a1B2c3D4e5F6g7H8" + "'\n")
+    r = rules(scan_text(text))
+    assert "github-oauth" in r and "stripe-restricted" in r
+
+
+def test_inline_allow_marker_suppresses_line():
+    # a real-looking token, but the line is annotated as allowed
+    line = "token = 'ghp_" + "a" * 36 + "'  # pragma: allowlist secret"
+    assert scan_text(line) == []
+    assert scan_text("k = 'ghp_" + "a" * 36 + "'  # gitleaks:allow") == []
+    # without the marker it IS reported
+    assert rules(scan_text("token = 'ghp_" + "a" * 36 + "'")) == {"github-pat"}
+
+
+def test_placeholder_and_example_values_are_ignored():
+    # the canonical AWS documentation key ends in EXAMPLE -> not a real secret
+    assert scan_text("aws = 'AKIAIOSFODNN7EXAMPLE'") == []
+    # template / placeholder assignments
+    assert scan_text('api_key = "your-api-key-here"') == []
+    assert scan_text('token = "<YOUR_TOKEN_HERE>"') == []
+    # a genuine AKIA key (no EXAMPLE) is still caught
+    assert "aws-access-key" in rules(scan_text("aws = 'AKIA1B2C3D4E5F6G7H8J'"))
