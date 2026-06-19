@@ -3,6 +3,20 @@
 All notable changes are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and [SemVer](https://semver.org/).
 
+## [0.3.0]
+
+### Added
+- **12 new credential detectors**: Anthropic (`sk-ant-`), Hugging Face (`hf_`), DigitalOcean
+  (`dop_v1_`), PyPI (`pypi-`), Telegram bot, Databricks (`dapi`), Doppler (`dp.pt.`), Square
+  (`sq0atp-`/`sq0csp-`), Twilio API key, Postman (`PMAK-`), Linear (`lin_api_`), and Slack
+  app-level tokens (`xapp-`).
+
+### Changed
+- The broad OpenAI `sk-` rule now excludes `sk-ant-`, so Anthropic keys are labeled as
+  Anthropic rather than mis-tagged OpenAI.
+- A token is reported by only the first (most specific) matching rule — no more double
+  findings when patterns overlap.
+
 ## [0.2.0]
 
 ### Added

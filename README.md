@@ -31,7 +31,7 @@ repos:
 sentinel app.py config.py        # exits 1 if it finds anything new
 ```
 
-- **Known formats** — GitHub (classic + fine-grained PATs **+ OAuth/app `gho_`/`ghu_`/`ghs_`/`ghr_`**) & GitLab PATs, AWS access keys, Slack tokens & webhooks, **Stripe secret *and* restricted (`rk_`)**, OpenAI/Google/SendGrid/npm keys, JWTs, PEM private keys, and `password = "…"`-style assignments.
+- **Known formats** — 25+ credential types: GitHub (classic + fine-grained PATs **+ OAuth/app `gho_`/`ghu_`/`ghs_`/`ghr_`**) & GitLab PATs, AWS access keys, Slack tokens/app-tokens/webhooks, **Stripe secret *and* restricted (`rk_`)**, **Anthropic (`sk-ant-`)**, OpenAI, Google, **Hugging Face (`hf_`)**, **DigitalOcean**, **PyPI**, **Telegram bot**, **Databricks**, **Doppler**, **Square**, **Twilio**, **Postman**, **Linear**, SendGrid/npm keys, JWTs, PEM private keys, and `password = "…"`-style assignments. The first (most specific) rule to claim a token wins, so each secret is reported once — `sk-ant-…` is labeled Anthropic, not OpenAI.
 - **Entropy fallback** — long, high-entropy, mixed-charset tokens are flagged even if they don't match a known pattern.
 - **Fewer false positives** — obvious placeholders/examples are ignored (the AWS `AKIA…EXAMPLE` doc key, `your-token-here`, `<YOUR_TOKEN>`), and a line carrying an inline marker (`# pragma: allowlist secret`, `gitleaks:allow`, or `sentinel:allow`) is skipped entirely.
 - **Redaction** — secrets are never printed in full (including in `--json` output).
@@ -63,7 +63,7 @@ findings = scan_text(open("app.py").read())
 ## Development
 
 ```bash
-pip install -e .[dev] && python -m pytest -q   # 18 tests
+pip install -e .[dev] && python -m pytest -q   # 21 tests
 ```
 
 ## License

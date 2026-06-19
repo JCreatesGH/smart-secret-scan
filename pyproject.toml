@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sentinel-scan"
-version = "0.2.0"
+version = "0.3.0"
 description = "A self-learning secret scanner for pre-commit with inline allowlist pragmas and placeholder suppression."
 readme = "README.md"
 authors = [{ name = "Joshua John", email = "josh202@gmail.com" }]

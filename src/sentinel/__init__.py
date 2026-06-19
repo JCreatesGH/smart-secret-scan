@@ -4,4 +4,4 @@ from .rules import PATTERNS, scan_text, Finding, is_placeholder
 from .baseline import Baseline, fingerprint
 __all__ = ["shannon_entropy", "looks_random", "PATTERNS", "scan_text",
            "Finding", "is_placeholder", "Baseline", "fingerprint"]
-__version__ = "0.2.0"
+__version__ = "0.3.0"

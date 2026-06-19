@@ -13,11 +13,24 @@ PATTERNS = {
     "gitlab-pat": re.compile(r"\bglpat-[A-Za-z0-9_\-]{20}\b"),
     "aws-access-key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     "slack-token": re.compile(r"\bxox[baprs]-[0-9A-Za-z-]{10,}\b"),
+    "slack-app-token": re.compile(r"\bxapp-[0-9]-[A-Za-z0-9-]{10,}\b"),
     "slack-webhook": re.compile(r"https://hooks\.slack\.com/services/[A-Za-z0-9/]+"),
     "google-api-key": re.compile(r"\bAIza[0-9A-Za-z_\-]{35}\b"),
     "stripe-secret": re.compile(r"\bsk_(?:live|test)_[0-9A-Za-z]{16,}\b"),
     "stripe-restricted": re.compile(r"\brk_(?:live|test)_[0-9A-Za-z]{16,}\b"),
-    "openai-key": re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_\-]{20,}\b"),
+    # Anthropic must precede the broader OpenAI `sk-` rule; OpenAI excludes `sk-ant-`.
+    "anthropic-key": re.compile(r"\bsk-ant-(?:api03-)?[A-Za-z0-9_\-]{20,}\b"),
+    "openai-key": re.compile(r"\bsk-(?!ant-)(?:proj-)?[A-Za-z0-9_\-]{20,}\b"),
+    "huggingface-token": re.compile(r"\bhf_[A-Za-z0-9]{34}\b"),
+    "digitalocean-token": re.compile(r"\b(?:dop|doo|dor)_v1_[a-f0-9]{64}\b"),
+    "pypi-token": re.compile(r"\bpypi-[A-Za-z0-9_\-]{50,}\b"),
+    "telegram-bot-token": re.compile(r"\b\d{8,10}:AA[A-Za-z0-9_\-]{32,33}\b"),
+    "databricks-pat": re.compile(r"\bdapi[0-9a-f]{32}\b"),
+    "doppler-token": re.compile(r"\bdp\.(?:pt|st|ct|sa|scim|audit)\.[A-Za-z0-9]{40,}\b"),
+    "square-token": re.compile(r"\bsq0(?:atp|csp)-[A-Za-z0-9_\-]{22,}\b"),
+    "twilio-api-key": re.compile(r"\bSK[0-9a-f]{32}\b"),
+    "postman-key": re.compile(r"\bPMAK-[A-Za-z0-9]{24}-[A-Za-z0-9]{34}\b"),
+    "linear-key": re.compile(r"\blin_api_[A-Za-z0-9]{40}\b"),
     "sendgrid-key": re.compile(r"\bSG\.[A-Za-z0-9_\-]{22}\.[A-Za-z0-9_\-]{43}\b"),
     "npm-token": re.compile(r"\bnpm_[A-Za-z0-9]{36}\b"),
     "private-key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
@@ -68,9 +81,13 @@ def scan_text(text: str) -> List[Finding]:
             continue
         for name, rx in PATTERNS.items():
             for m in rx.finditer(line):
-                if is_placeholder(m.group(0)):
+                tok = m.group(0)
+                if is_placeholder(tok):
                     continue
-                findings.append(Finding(i, name, m.group(0), "high"))
+                # the first (most specific) pattern to claim a token wins — no double-report
+                if any(f.line == i and f.secret == tok for f in findings):
+                    continue
+                findings.append(Finding(i, name, tok, "high"))
         for m in _ASSIGN.finditer(line):
             val = m.group(1)
             if is_placeholder(val):

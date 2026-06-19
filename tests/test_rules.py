@@ -75,3 +75,37 @@ def test_placeholder_and_example_values_are_ignored():
     assert scan_text('token = "<YOUR_TOKEN_HERE>"') == []
     # a genuine AKIA key (no EXAMPLE) is still caught
     assert "aws-access-key" in rules(scan_text("aws = 'AKIA1B2C3D4E5F6G7H8J'"))
+
+
+def test_detects_newer_provider_tokens():
+    cases = {
+        "huggingface-token": "hf_" + "a" * 34,
+        "digitalocean-token": "dop_v1_" + "a" * 64,
+        "pypi-token": "pypi-" + "a" * 50,
+        "telegram-bot-token": "123456789:AA" + "b" * 33,
+        "databricks-pat": "dapi" + "0" * 32,
+        "doppler-token": "dp.pt." + "a" * 40,
+        "square-token": "sq0atp-" + "a" * 22,
+        "twilio-api-key": "SK" + "0" * 32,
+        "postman-key": "PMAK-" + "a" * 24 + "-" + "b" * 34,
+        "linear-key": "lin_api_" + "a" * 40,
+        "slack-app-token": "xapp-1-" + "A1B2C3D4E5",
+    }
+    for rule, tok in cases.items():
+        found = rules(scan_text(f"k = '{tok}'"))
+        assert rule in found, f"{rule} not detected in {found}"
+
+
+def test_anthropic_key_labeled_distinctly_from_openai():
+    found = rules(scan_text("key = 'sk-ant-api03-" + "a" * 40 + "'"))
+    assert "anthropic-key" in found
+    assert "openai-key" not in found       # the broad sk- rule excludes sk-ant-
+    # plain OpenAI keys still labeled openai-key, not anthropic
+    oai = rules(scan_text("key = 'sk-proj-" + "c" * 30 + "'"))
+    assert "openai-key" in oai and "anthropic-key" not in oai
+
+
+def test_no_double_report_for_overlapping_patterns():
+    # one token should yield exactly one high-confidence finding, not several
+    hits = [f for f in scan_text("t = 'hf_" + "a" * 34 + "'") if f.confidence == "high"]
+    assert len(hits) == 1 and hits[0].rule == "huggingface-token"
